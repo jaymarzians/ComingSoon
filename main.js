@@ -1,38 +1,42 @@
-const inputEl = document.querySelector('#email');
-const btn = document.querySelector('#submit');
-const RegEmail = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-const iconErrorEl = document.querySelector('.icon-error');
-const textErrorEl = document.querySelector('.text-error');
-const fromGroupEl = document.querySelector('.form-group');
-let errors = [];
+import React, { useState } from 'react';
 
-btn.addEventListener('click', e => {
-  // remove success class
-  textErrorEl.classList.remove('text-success');
+const SubscriptionForm = () => {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
-  // reset errors
-  errors = [];
-  // prevent default action of form
-  e.preventDefault();
-  // validate email address
-  const email = inputEl.value;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    if (!email) {
+      setMessage('Please provide us your email');
+      setIsError(true);
+    } else if (!email.match(emailRegex)) {
+      setMessage('Please provide us your valid email');
+      setIsError(true);
+    } else {
+      setMessage('Thank you for subscribing to our newsletter.');
+      setIsError(false);
+    }
+  };
 
-  if (email == '' || email === undefined) {
-    errors.push('Please provide us your email');
-    // show error
-    iconErrorEl.style.display = 'block';
-    textErrorEl.innerText = errors[0];
-  } else if (!email.match(RegEmail)) {
-    errors.push('Please provide us your valid email');
-    // show error icon
-    iconErrorEl.style.display = 'block';
-    textErrorEl.innerText = errors[0];
-  }
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="form-group">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email Address"
+        />
+        {isError && <img src="./images/icon-error.svg" className="icon-error" alt="icon-error" />}
+        <button type="submit">
+          <img src="./images/icon-arrow.svg" alt="icon-arrow" />
+        </button>
+      </div>
+      <p className={isError ? 'text-error' : 'text-success'}>{message}</p>
+    </form>
+  );
+};
 
-  if (!errors.length > 0) {
-    // hide error icon
-    iconErrorEl.style.display = 'none';
-    textErrorEl.classList.add('text-success');
-    textErrorEl.innerText = 'Thank you for subscribing to our newsletter.';
-  }
-});
+export default SubscriptionForm;
